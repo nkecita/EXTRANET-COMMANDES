@@ -1,125 +1,125 @@
 <%@ Page MasterPageFile="~/LoginNewMasterPage.master" %>
 
 <script runat="server">
-    
+
     Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
 
 
 
 
 
-		If Request.QueryString("CleEcon") <> "" Then
+        If Request.QueryString("CleEcon") <> "" Then
             If Request.QueryString("CleEcon") = Session("CleEcon") Then
                 ' Response.Redirect("menu.aspx")
                 Response.Redirect("confirmation.aspx")
             End If
         End If
-        
+
         If Request.QueryString("codeclient") <> "" Then
-        
+
             If IsPostBack = False Then
                 UserName.Text = Request.QueryString("codeclient")
                 UserPass.Text = Request.QueryString("password")
-  
+
                 LoginBtn_Click(Sender, E)
             End If
         Else
             If Session("client") <> "" Then
-              
-				Response.Redirect("menutoken.aspx")
+
+                Response.Redirect("menutoken.aspx")
             End If
         End If
-        
+
         UserName.Focus()
-        Dim curl As String
-        curl = (Replace(HttpContext.Current.Request.Url.AbsoluteUri, "http://", ""))
-        
-        
-        curl = Replace(curl, "/loginnew.aspx", "")
-        curl = Replace(curl, "?codeclient", "&codeclient")
-        
-        Response.Redirect("https://econ.assaabloy.fr?origin=" & curl)
-        
-        
-        
-        
-        
-        
-        
-			
+        ' Dim curl As String
+        ' curl = (Replace(HttpContext.Current.Request.Url.AbsoluteUri, "http://", ""))
+
+
+        'curl = Replace(curl, "/loginnew.aspx", "")
+        'curl = Replace(curl, "?codeclient", "&codeclient")
+
+        ' Response.Redirect("https://econ.assaabloy.fr?origin=" & curl)
+
+
+
+
+
+
+
     End Sub
     Sub LoginBtn_Click(ByVal Sender As Object, ByVal E As EventArgs)
-        
+
         Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
         Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
-        
-     
+
+
         Dim cSql As String
         cSql = "select * from admin where login = '" & Replace(UserName.Text, "'", "''") & "'"
         cSql = cSql & " and password = '" & Replace(UserPass.Text, "'", "''") & "'"
-        
+
         Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
         dbCommand.CommandText = cSql
         dbCommand.Connection = dbConnection
-    
+
         Dim dataAdapter As System.Data.IDbDataAdapter = New System.Data.SqlClient.SqlDataAdapter
         dataAdapter.SelectCommand = dbCommand
         Dim dataSet As System.Data.DataSet = New System.Data.DataSet
         dataAdapter.Fill(dataSet)
-    
-    
-    
+
+
+
         If dataSet.Tables(0).Rows.Count() > 0 Then
-           
+
             ' Gestion des comptes administrateurs - partie Admin du site
-            
+
             Session("charte") = "FICH"
             Session("client") = "ADMIN"
             Session("filtre") = dataSet.Tables(0).Rows(0).Item("filtre").ToString.Trim
             Session("droits") = dataSet.Tables(0).Rows(0).Item("droits").ToString.Trim.ToUpper
             Session("langue") = "fr-FR"
             Response.Redirect("admin/login_admin2.aspx?login=" & dataSet.Tables(0).Rows(0).Item("login").ToString.Trim & "&passwd=" & dataSet.Tables(0).Rows(0).Item("password").ToString.Trim & "&filtre=" & dataSet.Tables(0).Rows(0).Item("filtre").ToString.Trim & "&droits=" & dataSet.Tables(0).Rows(0).Item("droits").ToString.Trim.ToUpper)
-        
-            
-        
+
+
+
         End If
-      
-	       
-dim CurrentDomain as string
-CurrentDomain = request.ServerVariables("SERVER_NAME")
- Dim mytool As New Tool_fichet
- 
-' response.write(mytool.get_info_visiteur(CurrentDomain,"BU"))
-	  
-    
+
+
+
+        Dim CurrentDomain as string
+        CurrentDomain = request.ServerVariables("SERVER_NAME")
+        Dim mytool As New Tool_fichet
+        ' Response.Write(CurrentDomain)
+        ' response.write(mytool.get_info_visiteur(CurrentDomain,"BU"))
+
+
         cSql = "select * from clients_new where codeclient = '" & Replace(UserName.Text, "'", "''") & "'"
         cSql = cSql & " and password = '" & Replace(UserPass.Text, "'", "''") & "'"
-		cSql = cSql & " AND bu='"& mytool.get_info_visiteur(CurrentDomain,"BU") & "'"
-		
-        'Response.Write(cSql)
+        cSql = cSql & " AND bu='"& mytool.get_info_visiteur(CurrentDomain,"BU") & "'"
+
+        Response.Write(cSql)
         ' Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
         dbCommand.CommandText = cSql
         dbCommand.Connection = dbConnection
-    
+
         '   Dim dataAdapter As System.Data.IDbDataAdapter = New System.Data.SqlClient.SqlDataAdapter
         dataAdapter.SelectCommand = dbCommand
         '   Dim dataSet As System.Data.DataSet = New System.Data.DataSet
         dataAdapter.Fill(dataSet)
-    
-     
-        
-    
+
+
+
+
         If dataSet.Tables(0).Rows.Count() > 0 Then
-           ' Dim mytool As New Tool_fichet
-           
+            ' Dim mytool As New Tool_fichet
+
             'A(VOIR)
             'If dataSet.Tables(0).Rows(0).Item("blocage") > 1 Then
 
             '    Msg.Text = mytool.traduction(dataSet.Tables(0).Rows(0).Item("langue"), "LOGIN", "MSG")
             'Else
-                  
+
             Session.Timeout = 40
-                
+
             Session("charte") = dataSet.Tables(0).Rows(0).Item("bu")
             Session("pays") = dataSet.Tables(0).Rows(0).Item("codepays") ' Récupération du pays
             Session("langue") = dataSet.Tables(0).Rows(0).Item("langue").ToString() ' Langue du client
@@ -133,7 +133,7 @@ CurrentDomain = request.ServerVariables("SERVER_NAME")
                 If Session("client").ToString.ToUpper = "E88888" Then
                     Response.Redirect("menutoken.aspx")
                 End If
-                    
+
                 If Session("client").ToString.Substring(0, 1) = "E" And dataSet.Tables(0).Rows(0).Item("adv") = True Then
                     Session("adv") = "OUI"
                     Response.Redirect("client_adv.aspx")
@@ -144,7 +144,7 @@ CurrentDomain = request.ServerVariables("SERVER_NAME")
             End If
             'End If
         Else
-           
+
             Msg.Text = "Les informations sont incorrectes, Veuillez recommencer."
             UserName.Focus()
         End If
