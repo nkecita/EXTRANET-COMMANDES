@@ -1,0 +1,502 @@
+<%@ Page MasterPageFile="~/MainMasterPage.master" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+
+<script runat="server">
+
+    Dim tabName As String =""
+	Dim path_url As String =""	
+	'aeh
+    Public sPATH As String = ""	
+	'fin aeh
+    Function signature(ByVal wSignature As String) As Boolean
+        
+        Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+        Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
+    
+        Dim cSql As String
+        cSql = "Select * from signature "
+        cSql = cSql + " WHERE (signature.Codeclient = '" & Session("client") & "' AND codesignaturevalideur = '" & wSignature & "')"
+        
+
+        Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
+        dbCommand.CommandText = cSql
+        dbCommand.Connection = dbConnection
+    
+        Dim dataAdapter As System.Data.IDbDataAdapter = New System.Data.SqlClient.SqlDataAdapter
+        dataAdapter.SelectCommand = dbCommand
+        Dim dataSet As System.Data.DataSet = New System.Data.DataSet
+        dataAdapter.Fill(dataSet)
+
+        If dataSet.Tables(0).Rows.Count() > 0 Then
+            signature = True
+            
+        Else
+            signature = False
+    
+        End If
+        dataSet.Clear()
+
+    End Function
+    
+    Sub affiche_commande()
+        ' TODO: update the ConnectionString value for your application
+        Dim ConnectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+        Dim CommandText As String
+
+        ' TODO: update the CommandText value for your application
+        
+        
+              
+  CommandText = "Select clients_new.CodeClient,num_commande,dtcomm,societe,modele,prix_valideur,prix_pointfort,langue FROM commandes_portes "
+        CommandText = CommandText + " LEFT OUTER JOIN clients_new ON clients_new.CodeClient = commandes_portes.num_client "
+        CommandText = CommandText + " LEFT OUTER JOIN signature ON signature.CodeClient = clients_new.CodeClient "
+        CommandText = CommandText + " WHERE (signature.CodeValideur = '" & Session("client") & "' AND (commandes_portes.status = '0')"
+        CommandText = CommandText + " AND (transfert = 'non' or transfert is null)) "
+        CommandText = CommandText + " ORDER BY CONVERT(datetime, dtcomm, 103) desc,num_commande desc"
+        'Response.Write(CommandText)
+
+        Dim myConnection As New SqlConnection(ConnectionString)
+        Dim myCommand As New SqlCommand(CommandText, myConnection)
+
+        myConnection.Open()
+
+        GridView1.DataSource = myCommand.ExecuteReader(CommandBehavior.CloseConnection)
+        GridView1.DataBind()
+        If GridView1.Rows.Count = 0 Then
+            Button1.Visible = False
+            Label2.Visible = False
+            TextBox1.Visible = False
+            
+        Else
+            Dim MaTrad As New Tool_fichet
+            Button1.Visible = True
+            Button1.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "BTN1")
+            Label2.Visible = True
+            Label2.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "LBL1")
+            TextBox1.Visible = True
+            
+            
+        End If
+    End Sub
+    Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
+        
+        If Session("client") = "" Then
+            Response.Redirect("login.aspx")
+        End If
+        Dim MaTrad As New Tool_fichet
+        If IsPostBack = False Then
+		'aeh
+       	 Select Case Session("charte").ToString().ToUpper()
+                Case "FICH"
+					sPATH =  "/commandes/"
+				Case "TEST"
+					sPATH =  "/commandes_test/"
+				Case "ABLO"
+					sPATH =  "/commandes_abloy/"	
+				Case "STRE"
+					sPATH =  "/commandes_stremler/"					
+				Case "VACH"
+					sPATH =  "/commandes_vachette/"
+				Case Else
+                    
+						sPATH = "/commandes/"
+            End Select	
+			'fin aeh
+            affiche_commande()
+          
+        End If
+        
+      
+       
+            
+    End Sub
+  
+    Private Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles GridView1.RowDataBound
+        
+        If e.Row.RowType = DataControlRowType.Header Then
+    
+            Dim MaTrad As New Tool_fichet
+            e.Row.Cells(0).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL1")
+            e.Row.Cells(1).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL2")
+            e.Row.Cells(2).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL7")
+            e.Row.Cells(3).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL3")
+            e.Row.Cells(4).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL4")
+            e.Row.Cells(5).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL5")
+            e.Row.Cells(6).Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "COL6")
+            
+        Else
+     
+            Dim selectCell As TableCell = e.Row.Cells(5)
+            If (selectCell.Controls.Count > 0) Then
+
+                Dim selectControl As Button = selectCell.Controls(0)
+                If Not IsNothing(selectControl) Then
+                    Dim MaTrad As New Tool_fichet
+                    selectControl.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "GRDBTN1")
+                End If
+
+                
+                
+                
+            End If
+        End If
+      
+        
+    End Sub
+    
+    Sub maj_annule(ByVal wCde As String)
+        'TextBox1.Text = GridView1.DataKeys(GridView1.SelectedIndex).Value.ToString()
+        
+        
+        
+        
+        Dim MyTool As New Tool_fichet
+        
+        Dim MyOrder As String = "CEW" & wCde.Trim.PadLeft(7, "0")
+        Dim MyCustomerMail As String = MyTool.get_order_info(wCde.Trim.ToString(), "email")
+        
+        Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+        Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
+
+        Dim queryString As String = "UPDATE commandes_portes SET status=@status"
+        queryString = queryString & " where num_commande = " & wCde.Trim.ToString()
+       ' response.write(queryString)
+        Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
+        dbCommand.CommandText = queryString
+        dbCommand.Connection = dbConnection
+
+        Dim dbParam_status As System.Data.IDataParameter = New System.Data.SqlClient.SqlParameter
+        dbParam_status.ParameterName = "@status"
+        dbParam_status.Value = -1
+        dbParam_status.DbType = System.Data.DbType.[String]
+        dbCommand.Parameters.Add(dbParam_status)
+	
+       
+        
+        Dim rowsAffected As Integer = 0
+        dbConnection.Open()
+        Try
+            rowsAffected = dbCommand.ExecuteNonQuery
+            
+               
+        Finally
+            dbConnection.Close()
+        End Try
+            
+        If rowsAffected = 1 Then
+          
+            ' Dim ConnectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+            Dim MaTrad As New Tool_fichet
+            Dim cImagePays As String
+            Dim cLangue As String
+            cLangue = MyTool.get_customer_info((MyTool.get_order_info(wCde.Trim.ToString(), "num_client")), "langue")
+            IF Session("charte") = "FICH"  then
+				Select Case cLangue
+					Case "es-ES"
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_espagne.gif' border='0' /><BR>"
+					Case "it"
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_italie.gif' border='0' /><BR>"
+					Case "pt-PT"
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_portugal.gif' border='0' /><BR>"
+					Case "nl-BE"
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_flamand.gif' border='0' /><BR>"
+					Case Else
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_france.gif' border='0' /><BR>"
+				End Select
+            ELSE
+						cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/header_abloy.png' border='0' /><BR>"
+			END IF
+			
+          
+            
+            MyTool.send_email(MaTrad.traduction(cLangue, "MAIL", "REFU3"), MyCustomerMail, MaTrad.traduction(cLangue, "MAIL", "REFU1") & MyOrder, cImagePays & MaTrad.traduction(cLangue, "MAIL", "REFU2") & MyOrder)
+            'affiche_commande()
+
+        Else
+           
+        End If
+    End Sub
+
+    Sub maj_status(ByVal wCde As String, ByVal wRef As String)
+        'TextBox1.Text = GridView1.DataKeys(GridView1.SelectedIndex).Value.ToString()
+        
+        
+        
+        
+        Dim MyTool As New Tool_fichet
+        
+        Dim MyOrder As String = "CEW000" & wCde.Trim.ToString()
+        Dim MyCustomerMail As String = MyTool.get_order_info(wCde.Trim.ToString(), "email")
+        
+        Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+        Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
+
+        Dim queryString As String = "UPDATE commandes_portes SET status=@status,ref_valideur=@refvalideur,transfert=@transfert,signataire=@signataire"
+        queryString = queryString & " where num_commande = " & wCde.Trim.ToString()
+        
+        Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
+        dbCommand.CommandText = queryString
+        dbCommand.Connection = dbConnection
+
+        Dim dbParam_status As System.Data.IDataParameter = New System.Data.SqlClient.SqlParameter
+        dbParam_status.ParameterName = "@status"
+        dbParam_status.Value = 1
+        dbParam_status.DbType = System.Data.DbType.[String]
+        dbCommand.Parameters.Add(dbParam_status)
+
+        Dim dbParam_refvalideur As System.Data.IDataParameter = New System.Data.SqlClient.SqlParameter
+        dbParam_refvalideur.ParameterName = "@refvalideur"
+        dbParam_refvalideur.Value = wRef
+	
+        dbParam_refvalideur.DbType = System.Data.DbType.[String]
+        dbCommand.Parameters.Add(dbParam_refvalideur)
+		
+			
+	Dim dbParam_transfert As System.Data.IDataParameter = New System.Data.SqlClient.SqlParameter
+        dbParam_transfert.ParameterName = "@transfert"
+        dbParam_transfert.Value = "oui"
+        dbParam_transfert.DbType = System.Data.DbType.[String]
+        dbCommand.Parameters.Add(dbParam_transfert)
+
+	Dim dbParam_signataire As System.Data.IDataParameter = New System.Data.SqlClient.SqlParameter
+        dbParam_signataire.ParameterName = "@signataire"
+        dbParam_signataire.Value = Session("client")
+        dbParam_signataire.DbType = System.Data.DbType.[String]
+        dbCommand.Parameters.Add(dbParam_signataire)
+        
+        Dim rowsAffected As Integer = 0
+        dbConnection.Open()
+        Try
+            rowsAffected = dbCommand.ExecuteNonQuery
+            
+               
+        Finally
+            dbConnection.Close()
+        End Try
+            
+        If rowsAffected = 1 Then
+          
+            ' Dim ConnectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+            Dim MaTrad As New Tool_fichet
+            Dim cImagePays As String
+            Dim cLangue As String
+            cLangue = MyTool.get_customer_info((MyTool.get_order_info(wCde.Trim.ToString(), "num_client")), "langue")
+            
+            Select Case cLangue
+                Case "es-ES"
+                    cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_espagne.gif' border='0' /><BR>"
+                Case "it"
+                    cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_italie.gif' border='0' /><BR>"
+                Case "pt-PT"
+                    cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_portugal.gif' border='0' /><BR>"
+                Case "nl-BE"
+                    cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_flamand.gif' border='0' /><BR>"
+                Case Else
+                    cImagePays = "<img height='66' src='" & System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/images/logo_france.gif' border='0' /><BR>"
+            End Select
+            
+          
+            
+            MyTool.send_email(MaTrad.traduction(cLangue, "MAIL", "CONF3"), MyCustomerMail, MaTrad.traduction(cLangue, "MAIL", "CONF1") & MyOrder, cImagePays & MaTrad.traduction(cLangue, "MAIL", "CONF2") & MyOrder)
+            'affiche_commande()
+
+        Else
+           
+        End If
+    End Sub
+
+    Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        
+        Dim i As Integer
+       
+
+        Dim bSelect As New CheckBox
+   
+        Dim RefValideur As New TextBox
+        
+        
+      
+     
+        
+        If TextBox1.Text <> "" Then
+            If signature(TextBox1.Text) Then
+               
+                Label3.Visible = False
+                Label3.Text = ""
+                
+                For i = 0 To GridView1.Rows.Count - 1
+                    RefValideur = GridView1.Rows(i).FindControl("RefValideur")
+                    bSelect = GridView1.Rows(i).FindControl("CheckBox1")
+                    If bSelect.Checked Then
+						If RefValideur.Text.Trim <> "" Then
+							maj_status(GridView1.DataKeys(i).Value.ToString(), RefValideur.Text.Trim)
+							GridView1.Rows(i).Visible = False
+						Else
+							Dim MaTrad As New Tool_fichet
+							Label3.Visible = True
+							Label3.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "MSG3")
+						End If
+                    End If
+                Next
+                ' Label3.Text = "nOK"
+				affiche_commande()
+            Else
+                Dim MaTrad As New Tool_fichet
+                'RequiredFieldValidator1.Visible = True
+                Label3.Visible = True
+                Label3.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "MSG1")
+                ' Label3.Text = "nc"
+            End If
+        Else
+            Dim MaTrad As New Tool_fichet
+            Label3.Visible = True
+            Label3.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "MSG2")
+        End If
+        
+    End Sub
+
+   
+    Protected Sub GridView1_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+
+    End Sub
+
+   
+    Protected Sub Button2_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Dim i As Integer
+       
+
+        Dim bSelect As New CheckBox
+   
+  
+        
+        If TextBox1.Text <> "" Then
+            If signature(TextBox1.Text) Then
+               
+                Label3.Visible = False
+                Label3.Text = ""
+                
+                For i = 0 To GridView1.Rows.Count - 1
+                 
+                    bSelect = GridView1.Rows(i).FindControl("CheckBox1")
+                    If bSelect.Checked Then
+                        maj_annule(GridView1.DataKeys(i).Value.ToString())
+                        GridView1.Rows(i).Visible = False
+                    End If
+                Next
+                ' Label3.Text = "nOK"
+            Else
+                Dim MaTrad As New Tool_fichet
+                'RequiredFieldValidator1.Visible = True
+                Label3.Visible = True
+                Label3.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "MSG1")
+                ' Label3.Text = "nc"
+            End If
+        Else
+            Dim MaTrad As New Tool_fichet
+            Label3.Visible = True
+            Label3.Text = MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "MSG2")
+        End If
+        
+    End Sub
+    Private Function getlongName(ByVal p As String) As String()
+        Dim tabName As String() = New String(1) {}
+        tabName(0) = p.Substring(0, 3)
+        tabName(1) = p.Substring(3, 2)
+
+
+        Return tabName
+    End Function	
+</script>
+
+<asp:Content ContentPlaceHolderID="e_body" runat="server">
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td  colspan="3">
+                <div align="center">
+                       <p> <%  Dim MaTrad As New Tool_fichet
+                            Response.Write(MaTrad.traduction(Session("langue"), "COMMANDES_VALIDATION", "TITRE1"))%></p>
+                            </div>
+            </td>
+        </tr>
+    </table>
+						   
+    <asp:GridView ID="GridView1" runat="server" CellPadding="4" AutoGenerateColumns="False"
+        ForeColor="#333333" DataKeyNames="num_commande"
+        OnSelectedIndexChanged="GridView1_SelectedIndexChanged">
+        <FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
+        <RowStyle ForeColor="#333333" BackColor="#F7F6F3" HorizontalAlign="Right" />
+        <Columns>
+
+			<asp:TemplateField HeaderText="ID" >
+			   <ItemTemplate>
+					<asp:HyperLink ID="hlID" runat="server" 
+								   Text='<%# EVAL("num_commande") %>'
+					               NavigateUrl='<%# sPATH & getlongName(EVAL("num_commande").ToString().Trim.PadLeft(7, "0"))(0) & "/" & getlongName(EVAL("num_commande").ToString().Trim.PadLeft(7, "0"))(1) & "/CEW"& EVAL("num_commande").ToString().Trim.PadLeft(7, "0") &"_VL.aspx" %>'
+								   Target="_blank"  
+								   />
+			   </ItemTemplate>
+			</asp:TemplateField>
+            <asp:BoundField DataField="dtcomm"></asp:BoundField>
+            <asp:BoundField DataField="codeclient"></asp:BoundField>
+            <asp:BoundField DataField="societe"></asp:BoundField>
+            <asp:BoundField DataField="modele"></asp:BoundField>
+            <asp:BoundField DataField="prix_valideur" DataFormatString="{0:C2}"></asp:BoundField>
+            <asp:BoundField DataField="prix_pointfort" DataFormatString="{0:C2}"></asp:BoundField>
+            <asp:TemplateField HeaderText="Référence">
+                <ItemTemplate>
+                    <asp:TextBox ID="RefValideur" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField>
+                <ItemTemplate>
+                    <asp:CheckBox ID="CheckBox1" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+        </Columns>
+        <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
+        <SelectedRowStyle BackColor="Green" Font-Bold="True" ForeColor="white" />
+        <HeaderStyle BackColor="#00529C" Font-Bold="True" ForeColor="White" />
+        <EditRowStyle BackColor="#999999" />
+        <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
+    </asp:GridView>
+    <br />
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <b>
+                    <asp:Label ID="Label2" runat="server" Text="Code signature :"></asp:Label>
+                </b>
+            </td>
+            <td>
+                <asp:TextBox ID="TextBox1" runat="server" TextMode="Password"></asp:TextBox>
+            </td>
+            <td>
+                <asp:Label ID="Label3" runat="server" Style="color: #FF3300" Text="Label" Visible="False"></asp:Label>
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center">
+                <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Valider" />
+                <asp:Button ID="Button2" runat="server" Text="Refuser" OnClick="Button2_Click" />
+            </td>
+            <td colspan="2" style="text-align: center">
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</asp:Content>

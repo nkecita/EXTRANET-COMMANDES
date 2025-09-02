@@ -1,0 +1,70 @@
+<%@ Master Language="VB" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat="server">
+ 
+    Sub btn_logout_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Session.Clear()
+        Session.Abandon()
+        Response.Redirect("https://econ.assaabloy.fr")
+    End Sub
+    
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>Econ _ Gestion des commandes par le configurateur de produits</title>
+    <%
+	
+	Dim mytool As New Tool_fichet
+ 	       
+dim CurrentDomain as string
+CurrentDomain = request.ServerVariables("SERVER_NAME")
+
+	
+	response.write("<link id='style_chooser' rel='stylesheet' type='text/css' href='" & mytool.get_info_visiteur(CurrentDomain,"css") & "' />")
+	
+	%>
+	
+</head>
+<body>
+    <form id="MainForm" runat="server">
+    <div id="e_top">
+        <div class="e_top_g">
+            <a href="/">
+                <img src="img/logo_empty.png" border="0" /></a></div>
+        <div class="e_top_g2">
+            <a href="http://www.e-consolutions.com" target="_blank">
+                <img src="img/logo_econ.png" border="0" /></a></div>				
+        <div class="e_top_d">
+            <h1>
+                Gestion des commandes<br />
+                par le configurateur de produits</h1>
+        </div>
+    </div>
+    <div id="e_top_under">
+        &nbsp;</div>
+    <div id="e_menu">
+        <div class="e_menu_g">
+            <span>Bienvenue sur l'outil de gestion des commandes</span>
+        </div>
+        <div class="e_menu_d">
+        </div>
+    </div>
+    <div id="e_body">
+        <div align="center">
+            <asp:ContentPlaceHolder ID="e_body" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </div>
+    <div id="e_bottom">
+        <div class="e_bottom_g">
+            &nbsp;</div>
+        <div class="e_bottom_d">
+            <img src="img/logo_bottom.png" border="0" alt="" /></div>
+    </div>
+    </form>
+</body>
+</html>

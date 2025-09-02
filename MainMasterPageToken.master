@@ -1,0 +1,189 @@
+<%@ Master Language="VB" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat="server">
+
+
+    Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
+        Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+       ' if (Session("client") Is Nothing Or Session("client") = "") Then
+        '     Response.Redirect("https://econ.assaabloy.fr")
+        'End If
+		Dim sCodeClient as string = request.querystring("codeclient")
+		Dim cToken as string      = request.querystring("token")
+		Dim mytool As New Tool_fichet
+		
+		Dim sqldatasource1 As New SqlDataSource
+
+           sqldatasource1.ConnectionString = connectionString
+			
+			SqlDataSource1.SelectCommand = "select * from access_token where codeclient='" & sCodeClient & "' and "& "token='" & ctoken &"'"
+		
+        Dim reader As System.Data.DataView
+
+             reader = DirectCast(SqlDataSource1.Select(DataSourceSelectArguments.Empty), System.Data.DataView)
+			Select case reader.count
+				case 1
+					Session("client") = sCodeClient
+					
+					Session("charte") = mytool.get_customer_info(sCodeClient,"BU")
+					Session("langue") = mytool.get_customer_info(sCodeClient,"langue")
+					Session("pays")	  = mytool.get_customer_info(sCodeClient,"codepays")
+					Session("tarif")  = mytool.get_customer_info(sCodeClient,"codetarif")
+            Case Else
+               
+             Response.Redirect("https://econ.assaabloy.fr")
+
+                
+        End Select
+			
+	
+
+
+        If Not Session("charte") Is Nothing Then
+            Select Case Session("charte").ToString().ToUpper()
+                Case "FICH"
+                    if Session("langue") = "it-IT" then
+						style_chooser.Attributes("href") = "style/e_style_pff-it.css"
+						lbl_e_menu_g.Text = "Italia"
+					else
+						style_chooser.Attributes("href") = "style/e_style_pff.css"
+						if isValidator(Session("client"),connectionString)=true then
+							if Session("langue") = "fr-FR" Then
+								lbl_e_menu_g.Text = "Connecté en tant que Point Fort Fichet"
+							else if Session("langue") = "nl-BE" Then
+								lbl_e_menu_g.Text = "Ingelogd als Point Fort Fichet"							
+							else if Session("langue") = "es-ES" Then
+								lbl_e_menu_g.Text = "Conectado como Point Fort Fichet"														
+							end if			
+						else
+							if Session("langue") = "fr-FR" Then
+								lbl_e_menu_g.Text = "Connecté en tant que Point Fort Fichet"
+							else if Session("langue") = "nl-BE" Then
+								lbl_e_menu_g.Text = "Ingelogd als Point Fort Fichet"							
+							else if Session("langue") = "es-ES" Then
+								lbl_e_menu_g.Text = "Conectado como Point Fort Fichet"														
+							end if								
+						end if								
+					end if	
+                Case "STRE"
+						style_chooser.Attributes("href") = "style/e_style_stre.css"
+						lbl_e_menu_g.Text = "Connecté en tant que concessionnaire Stremler"
+				Case "ABLO"
+                    style_chooser.Attributes("href") = "style/e_style_abloy.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client ABLOY"
+				Case "VACH"
+                    style_chooser.Attributes("href") = "style/e_style_vachette.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client VACHETTE"					
+				Case "YALE"
+                    style_chooser.Attributes("href") = "style/e_style_yale.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client YALE"					
+				Case "SHER"
+                    style_chooser.Attributes("href") = "style/e_style_sher.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client SHERLOCK"					
+				
+				Case "REHAB"
+                    style_chooser.Attributes("href") = "style/e_style_rehab.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client REHAB"		
+                Case "FSBA"
+                    style_chooser.Attributes("href") = "style/e_style_rehab.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que client Fichet Serrurerie Bâtiment"		                    			
+                Case Else
+                    
+						style_chooser.Attributes("href") = "style/e_style_aa.css"
+					
+            End Select
+        Else
+            
+			
+				style_chooser.Attributes("href") = "style/e_style_aa.css"
+			
+        End If
+        
+    End Sub
+    
+    Sub btn_logout_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Session.Clear()
+        Session.Abandon()
+        Response.Redirect("loginnew.aspx")
+    End Sub
+    sub go_home(ByVal sender As Object, ByVal e As System.EventArgs)
+	  Response.Redirect("loginnew.aspx")
+	end sub  
+	
+	Public Function isValidator(pCodeclient As String, pConnString As String) As Boolean
+		Dim isVald As Boolean = False
+		Dim sql As String = "SELECT COUNT(*) FROM signature where CodeClient ='" & pCodeclient & "' and  (CodeValideur is  null or ltrim(rtrim(CodeValideur))='')"
+		Using conn As New SqlConnection(pConnString)
+			Dim cmd As New SqlCommand(sql, conn)
+			Try
+				conn.Open()
+				If  Convert.ToInt32(cmd.ExecuteScalar()) <>1 Then
+					isVald = False
+				Else
+					isVald = True
+				End If
+			Catch ex As Exception
+				Console.WriteLine(ex.Message)
+			End Try
+		End Using
+		Return isVald
+	End Function
+	
+</script>
+
+<html ng-app="simuleo" ng-controller="controller" >
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+<!--<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />-->
+    <title>Econ _ Gestion des commandes par le configurateur de produits</title>
+    <link runat="server" id="style_chooser" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <form id="MainForm" runat="server">
+    <div id="e_top">
+        <div class="e_top_g">
+            <a href="/">
+                <img src="img/logo_empty.png" border="0" /></a></div>
+        <div class="e_top_g2">
+            <a href="http://www.e-consolutions.com" target="_blank">
+                <img src="img/logo_econ.png" border="0" /></a></div>					
+        <div class="e_top_d">
+            <h1>
+                Gestion des commandes<br />
+                par le configurateur de produits</h1>
+        </div>
+    </div>
+    <div id="e_top_under">
+        &nbsp;</div>
+    <div id="e_menu">
+        <div class="e_menu_g">
+            <asp:Label ID="lbl_e_menu_g" runat="server" /></div>
+        <div class="e_menu_d">
+		<asp:LinkButton ID="btn_home" runat="server" Text="Home | " OnClick="go_home"
+                    Style="text-align: center; text-decoration: none; color: White" />
+                <asp:LinkButton ID="btn_logout" runat="server" Text="Déconnexion" OnClick="btn_logout_Click"
+                    Style="text-align: center; text-decoration: none; color: White" />
+        </div>
+    </div>
+    <div id="e_body">
+        <div align="center">
+            <asp:ContentPlaceHolder ID="e_body" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </div>
+    <div id="e_bottom">
+        <div class="e_bottom_g">
+            &nbsp;</div>
+        <div class="e_bottom_d">
+            <img src="img/logo_bottom.png" border="0" alt="" /></div>
+    </div>
+    </form>
+</body>
+</html>

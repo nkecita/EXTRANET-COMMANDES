@@ -1,0 +1,14 @@
+﻿User-agent: * 
+Disallow: /
+Disallow: /admin/
+Disallow: /App_Code/
+Disallow: /App_Data/
+Disallow: /aspnet_client/
+Disallow: /Bin/
+Disallow: /images/
+Disallow: /img/
+Disallow: /include/
+Disallow: /test/
+Disallow: /style/
+Disallow: /test/
+Disallow: /commandes/
