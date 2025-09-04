@@ -258,10 +258,10 @@ End Try
 
         Dim queryString As String
 
-		 
-		
-        queryString = "SELECT * FROM  " & mytool.get_info_visiteur(wDomaine,"base") & ".dbo.FichetModele where id='MAIN'"
 
+
+        'queryString = "SELECT * FROM  " & mytool.get_info_visiteur(wDomaine, "base") & ".dbo.FichetModele where id='MAIN'"
+        queryString = "  select 'DEVIS' as model,'10' as version"
 
         Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
         dbCommand.CommandText = queryString

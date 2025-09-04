@@ -26,7 +26,7 @@
         Else
             If Session("client") <> "" Then
 
-                Response.Redirect("menutoken.aspx")
+                '   Response.Redirect("menutoken.aspx")
             End If
         End If
 
@@ -96,7 +96,7 @@
         cSql = cSql & " and password = '" & Replace(UserPass.Text, "'", "''") & "'"
         cSql = cSql & " AND bu='"& mytool.get_info_visiteur(CurrentDomain,"BU") & "'"
 
-        Response.Write(cSql)
+
         ' Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
         dbCommand.CommandText = cSql
         dbCommand.Connection = dbConnection
@@ -118,6 +118,31 @@
             '    Msg.Text = mytool.traduction(dataSet.Tables(0).Rows(0).Item("langue"), "LOGIN", "MSG")
             'Else
 
+
+            ' Gestion de la sécurité par TOKEN
+            Dim ndd As String
+            ndd = ""
+            Dim myuuid As Guid = Guid.NewGuid()
+            Dim myuuidasstring As String = myuuid.ToString()
+            Dim sqldatasource1 As New SqlDataSource
+            With sqldatasource1
+                .ConnectionString = ConfigurationManager.AppSettings("ConnectionString")
+
+
+                .DeleteCommand = "delete from access_token where codeclient='" & UserName.Text & "'"
+                .Delete()
+
+                .InsertCommand = "INSERT into access_token (codeclient,token) values (@codeclient,@token)"
+
+                .InsertParameters.Add("codeclient", UserName.Text)
+
+                .InsertParameters.Add("token", myuuidasstring)
+
+
+                .Insert()
+            End With
+            Session("token") = myuuidasstring
+
             Session.Timeout = 40
 
             Session("charte") = dataSet.Tables(0).Rows(0).Item("bu")
@@ -138,6 +163,7 @@
                     Session("adv") = "OUI"
                     Response.Redirect("client_adv.aspx")
                 Else
+
                     Response.Redirect("menutoken.aspx")
                     Session("adv") = "NON"
                 End If

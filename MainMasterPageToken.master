@@ -14,8 +14,8 @@
         ' if (Session("client") Is Nothing Or Session("client") = "") Then
         '     Response.Redirect("https://econ.assaabloy.fr")
         'End If
-        Dim sCodeClient as string = request.querystring("codeclient")
-        Dim cToken as string      = request.querystring("token")
+        Dim sCodeClient As String = Session("client")
+        Dim cToken As String = Session("token")
         Dim mytool As New Tool_fichet
 
         Dim sqldatasource1 As New SqlDataSource
@@ -25,10 +25,10 @@
         SqlDataSource1.SelectCommand = "select * from access_token where codeclient='" & sCodeClient & "' and "& "token='" & ctoken &"'"
 
         Dim reader As System.Data.DataView
-
+        ' Response.Write("select * from access_token where codeclient='" & sCodeClient & "' and " & "token='" & cToken & "'")
         reader = DirectCast(SqlDataSource1.Select(DataSourceSelectArguments.Empty), System.Data.DataView)
         Select case reader.Count
-            Case 0
+            Case 1
                 Session("client") = sCodeClient
 
                 Session("charte") = mytool.get_customer_info(sCodeClient,"BU")

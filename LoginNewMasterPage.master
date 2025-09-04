@@ -7,7 +7,7 @@
     Sub btn_logout_Click(ByVal sender As Object, ByVal e As System.EventArgs)
         Session.Clear()
         Session.Abandon()
-        Response.Redirect("https://econ.assaabloy.fr")
+        '        Response.Redirect("https://econ.assaabloy.fr")
     End Sub
 
 </script>
