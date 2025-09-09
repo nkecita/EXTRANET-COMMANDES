@@ -94,7 +94,7 @@
 
         cSql = "select * from clients_new where codeclient = '" & Replace(UserName.Text, "'", "''") & "'"
         cSql = cSql & " and password = '" & Replace(UserPass.Text, "'", "''") & "'"
-        cSql = cSql & " AND bu='"& mytool.get_info_visiteur(CurrentDomain,"BU") & "'"
+        ' cSql = cSql & " AND bu='"& mytool.get_info_visiteur(CurrentDomain,"BU") & "'"
 
 
         ' Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
@@ -163,7 +163,7 @@
                     Session("adv") = "OUI"
                     Response.Redirect("client_adv.aspx")
                 Else
-
+                    'Response.Write(Session("charte"))
                     Response.Redirect("menutoken.aspx")
                     Session("adv") = "NON"
                 End If

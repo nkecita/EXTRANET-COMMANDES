@@ -25,6 +25,23 @@
 
 
 
+        Select Case True
+            Case CurrentDomain.Contains(".abloy")
+                imgLogo.ImageUrl = "img/logo_abloy.png"
+            Case CurrentDomain.Contains("fichet")
+                imgLogo.ImageUrl = "img/logo_fichet.png"
+            Case CurrentDomain.Contains("stremler")
+                imgLogo.ImageUrl = "img/logo_stremler.png"
+            Case CurrentDomain.Contains("vachette")
+                imgLogo.ImageUrl = "img/logo_vachette.png"
+            Case CurrentDomain.Contains("yale")
+                imgLogo.ImageUrl = "img/logo_yale.png"
+            Case CurrentDomain.Contains("rehab")
+                imgLogo.ImageUrl = "img/logo_rehab.png"
+            Case Else
+                imgLogo.ImageUrl = "img/logo_test.png"
+        End Select
+
         Response.Write("<link id='style_chooser' rel='stylesheet' type='text/css' href='" & mytool.get_info_visiteur(CurrentDomain, "css") & "' />")
 
     %>
@@ -34,11 +51,11 @@
         <div id="e_top">
             <div class="e_top_g">
                 <a href="/">
-                    <img src="img/logo_empty.png" border="0" /></a>
+                    <asp:Image ID="imgLogo" runat="server" ImageUrl="img/logo_empty.png" /></a>
             </div>
             <div class="e_top_g2">
                 <a href="http://www.e-consolutions.com" target="_blank">
-                    <img src="img/logo_econ.png" border="0" /></a>
+                    <img src="img/logo_econ.png" alt="logo_econ" border="0" /></a>
             </div>
             <div class="e_top_d">
                 <h1>Gestion des commandes<br />

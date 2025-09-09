@@ -1,4 +1,5 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
+
 <%@ Page Language="VB" %>
 
 <%@ Import Namespace="System.Data" %>
@@ -87,7 +88,7 @@
 
             ' Construction manuelle de la query string
             Dim sb As New StringBuilder()
-            sb.Append("Environment=" & Server.UrlEncode(Request.QueryString("Environment")))
+            sb.Append("Environment=" & Session("charte")) ' & Server.UrlEncode(Request.QueryString("Environment")))
             sb.Append("&Model=" & Server.UrlEncode(Request.QueryString("Model")))
             sb.Append("&modelversion=" & Server.UrlEncode(Request.QueryString("modelversion")))
             sb.Append("&Configuration=" & Server.UrlEncode(Request.QueryString("Configuration")))
@@ -105,10 +106,13 @@
             End If
         End If
 
-        ' Injection de lâ€™iframe
-        iframeEcon.Text = "<iframe name='I1' src='" & finalUrl & "' frameborder='0' scrolling='auto' style='height:96%;width:100%'>" &
-                  "Votre navigateur ne prend pas en charge les cadres intÃ©grÃ©s ou est configurÃ© pour ne pas les afficher." &
-                  "</iframe>"
+        iframeEcon.Text = "<iframe name='I1' src='" & finalUrl & "' frameborder='0' " &
+                   "scrolling='auto' style='height:96%;width:100%;display:none;' " &
+                   "onload='hideLoader(this)'>" &
+                   "Votre navigateur ne prend pas en charge les cadres intégrés." &
+                   "</iframe>"
+
+
 
         '   Response.Write(iframeEcon.Text)
     End Sub
@@ -117,7 +121,7 @@
 
         Select Case charte
             Case "FICH" : Return ConfigurationManager.AppSettings("urlecon") & "/econ4/"
-            Case "TEST" : Return "https://econ2-test.assaabloy.fr/econ-test/"
+            Case "TEST" : Return ConfigurationManager.AppSettings("urltest") & "/econ-test/"
             Case "ABLO" : Return ConfigurationManager.AppSettings("urleconabloy") & "/econ4-abloy/"
             Case "STRE" : Return ConfigurationManager.AppSettings("urleconstremler") & "/econ4-stremler/"
             Case "VACH" : Return ConfigurationManager.AppSettings("urleconvachette") & "/econ4-vachette/"
@@ -162,39 +166,96 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
     <title>Econ _ Gestion des commandes par le configurateur de produits</title>
     <link runat="server" id="style_chooser" rel="stylesheet" type="text/css" />
+    <style>
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animation de fondu */
+        #loader {
+            transition: opacity 0.6s ease;
+        }
+
+            #loader.fade-out {
+                opacity: 0;
+                pointer-events: none;
+            }
+    </style>
+
 </head>
 <body>
     <form id="MainForm" runat="server">
-    <div id="e_top">
-        	<div class="e_top_g">
-            <a href="/">
-                <img src="img/logo_empty.png" border="0" /></a></div>
-        <div class="e_top_d">
-           
+        <div id="e_top">
+            <div class="e_top_g">
+                <a href="/">
+                    <img src="img/logo_empty.png" border="0" /></a>
+            </div>
+            <div class="e_top_d">
+            </div>
         </div>
-    </div>
-    <div id="e_top_under">
-        &nbsp;</div>
-    <div id="e_menu">
-        <div class="e_menu_g">
-            <asp:Label ID="lbl_e_menu_g" runat="server" /></div>
-        <div class="e_menu_d">
-		<asp:LinkButton ID="btn_home" runat="server" Text="Home | " OnClick="go_home"
-                    Style="text-align: center; text-decoration: none; color: White" />		
+        <div id="e_top_under">
+            &nbsp;
+        </div>
+        <div id="e_menu">
+            <div class="e_menu_g">
+                <asp:Label ID="lbl_e_menu_g" runat="server" />
+            </div>
+            <div class="e_menu_d">
+                <asp:LinkButton ID="btn_home" runat="server" Text="Home | " OnClick="go_home"
+                    Style="text-align: center; text-decoration: none; color: White" />
                 <asp:LinkButton ID="btn_logout" runat="server" Text="D&eacute;connexion" OnClick="btn_logout_Click"
                     Style="text-align: center; text-decoration: none; color: White" />
+            </div>
         </div>
-    </div>
-  <div id="e_body"; style="height: 787px; width: 1000px">
-      
-    <asp:Literal ID="iframeEcon" runat="server"></asp:Literal>
-</div>
-    <div id="e_bottom">
-        <div class="e_bottom_g">
-            &nbsp;</div>
-        <div class="e_bottom_d">
-            <img src="img/logo_bottom.png" border="0" alt="" /></div>
-    </div>
+        <div id="e_body" style="height: 787px; width: 1030px; position: relative;">
+            <div id="loader"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
+                <div class="spinner"></div>
+                <div style="margin-top: 15px; font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+                    Chargement en cours...Veuillez patienter
+                </div>
+            </div>
+
+
+            <asp:Literal ID="iframeEcon" runat="server"></asp:Literal>
+        </div>
+        <div id="e_bottom">
+            <div class="e_bottom_g">
+                &nbsp;
+            </div>
+            <div class="e_bottom_d">
+                <img src="img/logo_bottom.png" border="0" alt="" />
+            </div>
+        </div>
     </form>
+    <script>
+        function hideLoader(iframe) {
+            const loader = document.getElementById("loader");
+            // lance le fondu
+            loader.classList.add("fade-out");
+
+            // après la transition, on masque complètement le loader
+            setTimeout(() => {
+                loader.style.display = "none";
+                iframe.style.display = "block";
+            }, 600); // doit correspondre à la durée du transition CSS (0.6s)
+        }
+    </script>
+
 </body>
 </html>

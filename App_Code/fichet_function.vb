@@ -215,17 +215,19 @@ End Try
 
     Public Function url_econ(ByVal Wproduct As String,Byval wDomaine as string) As String
 	Dim mytool As New Tool_fichet
-	
-	dim spath as string
-	If Not HttpContext.Current.Session("charte") Is Nothing Then
+
+        Dim spath As String
+        Dim pEnv As String
+        If Not HttpContext.Current.Session("charte") Is Nothing Then
             Select Case HttpContext.Current.Session("charte").ToString().ToUpper()
                Case "FICH"
 					sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") 
 				Case "TEST"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") 
-				Case "ABLO"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconabloy") 	
-				Case "STRE"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urltest")
+                Case "ABLO"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconabloy")
+                    pEnv = "ABLOY"
+                Case "STRE"
 					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconstremler") 				
 				Case "VACH"
 					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconvachette")
@@ -249,9 +251,9 @@ End Try
  
 
         HttpContext.Current.Session("chaine_econ") = sPATH & "/" &  mytool.get_info_visiteur(wDomaine,"url_econ")  & "/econEnginehtml.aspx"
-		
-        HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "?environment=" &  mytool.get_info_visiteur(wDomaine,"environnement") 
-	
+
+        HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "?environment=" & pEnv '  ' mytool.get_info_visiteur(wDomaine,"environnement") 
+
 
         Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
         Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
@@ -275,7 +277,7 @@ End Try
 
 
         HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "&model=" & dataSet.Tables(0).Rows(0).Item("model").ToString.TrimEnd()
-
+        'HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "&environnement=" & session("charte")
         HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "&modelversion=" & dataSet.Tables(0).Rows(0).Item("version").ToString.TrimEnd()
         HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "&language=" & HttpContext.Current.Session("langue").ToString.TrimEnd()
         HttpContext.Current.Session("chaine_econ") = HttpContext.Current.Session("chaine_econ") & "&customer=" & HttpContext.Current.Session("client").ToString.TrimEnd()
