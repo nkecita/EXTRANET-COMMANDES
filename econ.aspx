@@ -122,7 +122,7 @@
         Select Case charte
             Case "FICH" : Return ConfigurationManager.AppSettings("urlecon") & "/econ4/"
             Case "TEST" : Return ConfigurationManager.AppSettings("urltest") & "/econ-test/"
-            Case "ABLO" : Return ConfigurationManager.AppSettings("urleconabloy") & "/econ4-abloy/"
+            Case "ABLO" : Return ConfigurationManager.AppSettings("urleconabloy") & "/econ-abloy/"
             Case "STRE" : Return ConfigurationManager.AppSettings("urleconstremler") & "/econ4-stremler/"
             Case "VACH" : Return ConfigurationManager.AppSettings("urleconvachette") & "/econ4-vachette/"
             Case "YALE" : Return ConfigurationManager.AppSettings("urleconyale") & "/econ4-yale/"
@@ -156,7 +156,7 @@
         Return isVald
     End Function
     Sub go_home(ByVal sender As Object, ByVal e As System.EventArgs)
-        Response.Redirect("loginnew.aspx")
+        Response.Redirect("menutoken.aspx")
     End Sub
 </script>
 

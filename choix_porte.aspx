@@ -1,4 +1,4 @@
-<%@  MasterPageFile="~/MainMasterPage.master" ClassName="fichet" %>
+<%@  MasterPageFile="~/MainMasterPageToken.master" ClassName="fichet" %>
 
 <script runat="server">
 

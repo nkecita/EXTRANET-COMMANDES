@@ -1,43 +1,43 @@
-<%@ Page MasterPageFile="~/MainMasterPage.master" %>
+<%@ Page MasterPageFile="~/MainMasterPageToken.master" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Data.SqlClient" %>
 
 <script runat="server">
- 
+
 
     Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
-        
+
         If Session("client") = "" Then
-            Response.Redirect("login.aspx")
+            Response.Redirect("loginnew.aspx")
         End If
         Dim MaTrad As New Tool_fichet
         Button1.Text = MaTrad.traduction(Session("langue"), "COMMANDES_SAUVEGARDE", "BUTTON1")
 
     End Sub
-    
+
     Private Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles GridView1.RowDataBound
         If e.Row.RowType = DataControlRowType.Header Then
             Dim MaTrad As New Tool_fichet
             e.Row.Cells(0).Text = MaTrad.traduction(Session("langue"), "COMMANDES_SAUVEGARDE", "COL1")
-			Dim dField As DataControlFieldCell
-			Dim hlf As HyperLinkField 
-			dField = e.Row.Cells(0)
-			hlf = dField.ContainingField
-			
-			
-			Dim mytool As New Tool_fichet       
-			dim CurrentDomain as string
-			CurrentDomain = request.ServerVariables("SERVER_NAME")
+            Dim dField As DataControlFieldCell
+            Dim hlf As HyperLinkField
+            dField = e.Row.Cells(0)
+            hlf = dField.ContainingField
 
-	
-	
-			dim cEnv as string
-			cEnv=""
-		
-		     
-		cEnv= mytool.get_info_visiteur(CurrentDomain,"ENVIRONNEMENT")
-			hlf.DataNavigateUrlFormatString = "econ.aspx?environment=" & cenv & "&Model={6}&modelversion={3}&configuration={0}&version=1&language={1}&customer={4}&product={5}"
+
+            Dim mytool As New Tool_fichet
+            dim CurrentDomain as string
+            CurrentDomain = request.ServerVariables("SERVER_NAME")
+
+
+
+            dim cEnv as string
+            cEnv=""
+
+
+            cEnv= mytool.get_info_visiteur(CurrentDomain,"ENVIRONNEMENT")
+            hlf.DataNavigateUrlFormatString = "econ.aspx?environment=" & cenv & "&Model={6}&modelversion={3}&configuration={0}&version=1&language={1}&customer={4}&product={5}"
 
             e.Row.Cells(1).Text = MaTrad.traduction(Session("langue"), "COMMANDES_SAUVEGARDE", "COL2")
             e.Row.Cells(2).Text = MaTrad.traduction(Session("langue"), "COMMANDES_SAUVEGARDE", "COL3")
@@ -46,8 +46,8 @@
         End If
     End Sub
 
-   
-    
+
+
     Sub ApplyFilter_Click(ByVal Sender As Object, ByVal E As EventArgs)
 
         ' TODO: update the ConnectionString value for your application
@@ -58,19 +58,19 @@
         Dim filterValue As String = Session("client")
 
         ' TODO: update the CommandText value for your application
-		Dim mytool As New Tool_fichet       
-	   dim CurrentDomain as string
-		CurrentDomain = request.ServerVariables("SERVER_NAME")
+        Dim mytool As New Tool_fichet
+        dim CurrentDomain as string
+        CurrentDomain = request.ServerVariables("SERVER_NAME")
 
-	
-	
-		dim cBase as string
-		cBase=""
-		
-		     
-		cBase= mytool.get_info_visiteur(CurrentDomain,"BASE")
-            
-		
+
+
+        dim cBase as string
+        cBase=""
+
+
+        cBase= mytool.get_info_visiteur(CurrentDomain,"BASE")
+
+
         CommandText = "select "
         CommandText = CommandText + " rtrim(cp.configuration) as configuration,"
         CommandText = CommandText + " cp.datecreation,"
@@ -84,14 +84,14 @@
         CommandText = CommandText + " rtrim(fm.version) as version "
         CommandText = CommandText + " from configurations_portes cp"
         CommandText = CommandText + " left join " & cBase & ".dbo.FichetModele fm on fm.id = 'MAIN'  "
-        CommandText = CommandText + " Left Join  " & cBase & ".dbo.econelements ee on (  ee.modelname=fm.model)"
+        CommandText = CommandText + " Left Join  " & cBase & ".econ.elements ee on (  ee.modelname=fm.model)"
         CommandText = CommandText + " left join clients_new on clients_new.codeclient = cp.codeclient "
         CommandText = CommandText + " where cp.codeclient = '" & filterValue & "'"
 
-' ee.modelversion = fm.version and
-  
+        ' ee.modelversion = fm.version and
+
         CommandText = CommandText + "  and (ee.type = 3 and ee.name = cp.configuration)"
-        
+
         If datedeb.Text <> "" And datefin.Text <> "" Then
             CommandText = CommandText + " and CONVERT(datetime, datecreation, 103) >='" & datedeb.Text & "'"
             CommandText = CommandText + " and CONVERT(datetime, datecreation, 103) <='" & datefin.Text & "'"
@@ -103,12 +103,12 @@
             CommandText = CommandText + " and CONVERT(datetime, datecreation, 103) <='" & datefin.Text & "'"
         End If
         CommandText = CommandText + " order by CONVERT(datetime, datecreation, 103) desc"
-        
-        
-        
-        
+
+
+
+
         ' Response.Write(CommandText)
-        
+
         Dim myConnection As New SqlConnection(ConnectionString)
         Dim myCommand As New SqlCommand(CommandText, myConnection)
 
@@ -116,9 +116,9 @@
 
         GridView1.DataSource = myCommand.ExecuteReader(CommandBehavior.CloseConnection)
         GridView1.DataBind()
-        
-        
-        
+
+
+
 
     End Sub
 
@@ -193,7 +193,7 @@
         <FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
         <RowStyle ForeColor="#333333" BackColor="#F7F6F3" HorizontalAlign="Right" />
         <Columns>
-            <asp:HyperLinkField DataTextField="configuration" DataNavigateUrlFormatString= "http://econ.fichet-pointfort.fr/econ.aspx?environment=default&Model={6}&modelversion={3}&configuration={0}&version=1&language={1}&customer={4}&product={5}"
+            <asp:HyperLinkField DataTextField="configuration" DataNavigateUrlFormatString= "http://econ2.fichet-pointfort.fr/econ.aspx?environment=default&Model={6}&modelversion={3}&configuration={0}&version=1&language={1}&customer={4}&product={5}"
                 DataNavigateUrlFields="configuration,langue,modele,version,codeclient,produit_url,model"
                 Target="_self" />
             <asp:BoundField DataField="datecreation"></asp:BoundField>
@@ -207,6 +207,6 @@
         <EditRowStyle BackColor="#999999" />
         <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
     </asp:GridView>
-    </form> </div>
+ 
     <br />
 </asp:Content>

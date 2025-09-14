@@ -1,7 +1,7 @@
 <!--#include file="..\include\config.asp"-->
 <%
 if(Not session("admin") = "oui") then
-	response.Redirect "../login.aspx"
+	response.Redirect "../loginnew.aspx"
 End if
 
 on error resume next

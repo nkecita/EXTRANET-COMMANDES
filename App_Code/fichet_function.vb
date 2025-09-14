@@ -218,36 +218,49 @@ End Try
 
         Dim spath As String
         Dim pEnv As String
-        If Not HttpContext.Current.Session("charte") Is Nothing Then
-            Select Case HttpContext.Current.Session("charte").ToString().ToUpper()
-               Case "FICH"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") 
-				Case "TEST"
+        Dim charte As String
+        charte = HttpContext.Current.Session("charte")
+        If Not charte Is Nothing Then
+            Select Case charte.ToString().ToUpper()
+                Case "FICH"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urlecon")
+                    pEnv = "FICH"
+                Case "TEST"
                     spath = System.Configuration.ConfigurationManager.AppSettings("urltest")
+                    pEnv = "ABLOY"
                 Case "ABLO"
                     spath = System.Configuration.ConfigurationManager.AppSettings("urleconabloy")
                     pEnv = "ABLOY"
                 Case "STRE"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconstremler") 				
-				Case "VACH"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconvachette")
-				Case "YALE"
-					sPATH =  System.Configuration.ConfigurationManager.AppSettings("urleconyale") 
-				Case "SHER"
-					sPATH =  System.Configuration.ConfigurationManager.AppSettings("urleconsherlock") 
-				Case "REHAB"
-					sPATH =  System.Configuration.ConfigurationManager.AppSettings("urleconrehab") 
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconstremler")
+                    pEnv = "STRE"
+                Case "VACH"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconvachette")
+                    pEnv = "VACH"
+                Case "YALE"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconyale")
+                    pEnv = "YALE"
+                Case "SHER"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconsherlock")
+                    pEnv = "SHER"
+                Case "REHAB"
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")
+                    pEnv = "REHAB"
                 Case "FSBA"
-					sPATH =  System.Configuration.ConfigurationManager.AppSettings("urleconrehab") 
-				Case Else
-					
-						sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
-			End Select
-		
-		ELSE
-		
-						sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") 
-		end if
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")
+                    pEnv = "FSBA"
+                Case Else
+
+                    spath = System.Configuration.ConfigurationManager.AppSettings("urlecon")
+                    pEnv = "FICH"
+            End Select
+
+        Else
+
+            spath = System.Configuration.ConfigurationManager.AppSettings("urlecon")
+            pEnv = "FICH"
+
+        End if
  
 
         HttpContext.Current.Session("chaine_econ") = sPATH & "/" &  mytool.get_info_visiteur(wDomaine,"url_econ")  & "/econEnginehtml.aspx"
@@ -263,7 +276,8 @@ End Try
 
 
         'queryString = "SELECT * FROM  " & mytool.get_info_visiteur(wDomaine, "base") & ".dbo.FichetModele where id='MAIN'"
-        queryString = "  select 'DEVIS' as model,'10' as version"
+        ' queryString = "  select 'DEVIS' as model,'10' as version"
+        queryString = "SELECT model,version FROM  environnements where BU='" & charte & "'"
 
         Dim dbCommand As System.Data.IDbCommand = New System.Data.SqlClient.SqlCommand
         dbCommand.CommandText = queryString

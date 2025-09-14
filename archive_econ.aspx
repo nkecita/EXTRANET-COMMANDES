@@ -1,4 +1,4 @@
-<%@ Page MasterPageFile="~/MainMasterPage.master" %>
+<%@ Page MasterPageFile="~/MainMasterPageToken.master" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Data.SqlClient" %>

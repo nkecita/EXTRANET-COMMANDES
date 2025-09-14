@@ -78,7 +78,7 @@
             Session("droits") = dataSet.Tables(0).Rows(0).Item("droits").ToString.Trim.ToUpper
             Session("langue") = "fr-FR"
             Response.Redirect("admin/login_admin2.aspx?login=" & dataSet.Tables(0).Rows(0).Item("login").ToString.Trim & "&passwd=" & dataSet.Tables(0).Rows(0).Item("password").ToString.Trim & "&filtre=" & dataSet.Tables(0).Rows(0).Item("filtre").ToString.Trim & "&droits=" & dataSet.Tables(0).Rows(0).Item("droits").ToString.Trim.ToUpper)
-
+            ' Response.Write("admin/login_admin2.aspx?login=" & dataSet.Tables(0).Rows(0).Item("login").ToString.Trim & "&passwd=" & dataSet.Tables(0).Rows(0).Item("password").ToString.Trim & "&filtre=" & dataSet.Tables(0).Rows(0).Item("filtre").ToString.Trim & "&droits=" & dataSet.Tables(0).Rows(0).Item("droits").ToString.Trim.ToUpper)
 
 
         End If

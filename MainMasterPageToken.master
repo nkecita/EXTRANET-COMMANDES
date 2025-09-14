@@ -37,7 +37,9 @@
                 Session("tarif")  = mytool.get_customer_info(sCodeClient,"codetarif")
             Case Else
 
-                Response.Redirect("https://econ.assaabloy.fr")
+                Session.Clear()
+                Session.Abandon()
+                Response.Redirect("loginnew.aspx")
 
 
         End Select
@@ -113,8 +115,8 @@
         Response.Redirect("loginnew.aspx")
     End Sub
     sub go_home(ByVal sender As Object, ByVal e As System.EventArgs)
-        Response.Redirect("loginnew.aspx")
-    end sub
+        Response.Redirect("menutoken.aspx")
+    End sub
 
     Public Function isValidator(pCodeclient As String, pConnString As String) As Boolean
         Dim isVald As Boolean = False

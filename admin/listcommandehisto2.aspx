@@ -4,98 +4,103 @@
 <%@ Import Namespace="System.Data.SqlClient" %>
 
 <script runat="server">
-   
+
     Public sPATH As String = ""
     Public tabName As String() = New String(1) {}
-	    Public libcde as string =""
-	'aeh
+    Public libcde as string =""
+    'aeh
     Sub ApplyFilter_Click(ByVal Sender As Object, ByVal E As EventArgs)
+
         If Not IsNothing(numCmd.Text) Then
-			RechercherParNumCmd(numCmd.Text)
-		else
-			RechercherParNumCmd(String.Empty)		
-		End If
-    End Sub	
-	Sub RechercherParNumCmd(sFiltre as String)
-
-	IF Session("charte").ToString().ToUpper() = "REHAB" then
-		libcde="commandes_portes_rehab"
-	Else
-		libcde="commandes_portes"
-	End If	
-	
-	
-      SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.AppSettings("connectionString")
-		dim CurrentDomain as string
-		CurrentDomain = request.ServerVariables("SERVER_NAME")
-		
-		Dim mytool As New Tool_fichet
-		mytool.get_info_visiteur(CurrentDomain,"commande")
-			
-			
-		Dim cBu As String
-		dim cCde as string
-		ccde = mytool.get_info_visiteur(CurrentDomain,"COMMANDE")
-		cBu  = mytool.get_info_visiteur(CurrentDomain,"BU")
-
-		If Not Session("charte") Is Nothing Then
-			Select cBu.ToString().ToUpper()
-				Case "FICH"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/" & ccde & "/"
-				Case "TEST"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/" & ccde & "/"
-				Case "ABLO"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconabloy") & "/" & ccde & "/"
-				Case "STRE"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconstremler") & "/" & ccde & "/"			
-				Case "VACH"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconvachette")& "/" & ccde & "/"
-				Case "YALE"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconyale")& "/" & ccde & "/"
-				Case "SHER"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconsherlock")& "/" & ccde & "/"
-				Case "REHAB"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")& "/" & ccde & "/"
-                Case "FSBA"
-					sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")& "/" & ccde & "/"
-				Case Else
-					
-						sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
-			End Select
-		ELSE
-			sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
-		end if
-
-		Dim cEnviron As String
-		cEnviron  = mytool.get_info_visiteur(CurrentDomain,"Environnement")
-
-		If Session("filtre") <> "" Then 
-			SqlDataSource3.SelectCommand = "SELECT [num_commande], [dtcomm],hrcomm,[societe], [num_client], [ref_client], [delai],  [prix_valideur],[prix_pointfort], [modele],status,souche FROM " & libcde & " where 1=1" & " AND Environnement ='" & cEnviron & "'"  & Session("filtre") & "  "& IIf (String.IsNullOrEmpty(sFiltre), String.Empty, " AND num_commande like '" & sFiltre &"'") &" order by num_commande desc "
-		Else
-			SqlDataSource3.SelectCommand = "SELECT [num_commande], [dtcomm],hrcomm,[societe], [num_client], [ref_client], [delai],  [prix_valideur],[prix_pointfort], [modele],status,souche FROM " & libcde & " where Environnement ='" & cEnviron & "' " & IIf (String.IsNullOrEmpty(sFiltre), String.Empty, " AND num_commande like '" & sFiltre &"'") &"  order by num_commande desc "
-		End If
-       
-        If Session("client") <> "ADMIN" Then
-            Response.Redirect("../login.aspx")
-	
+            RechercherParNumCmd(numCmd.Text)
+        Else
+            RechercherParNumCmd(String.Empty)
         End If
-	   
-	End sub	
-	'fin aeh
-    
-    Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
-		'aeh
-		Dim MaTrad As New Tool_fichet
-		Button1.text = MaTrad.traduction(IIf (Session("langue") Is Nothing, String.Empty, Session("langue")), "LISTCOMMANDEHISTO", "BUTTON1")
-		'if not IsPostBack then
-			RechercherParNumCmd(String.Empty)
-		'end if
-		'fin aeh
     End Sub
-	
+    Sub RechercherParNumCmd(sFiltre as String)
+
+        IF Session("charte").ToString().ToUpper() = "REHAB" then
+            libcde="commandes_portes_rehab"
+        Else
+            libcde="commandes_portes"
+        End If
+
+
+        SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.AppSettings("connectionString")
+        dim CurrentDomain as string
+        CurrentDomain = request.ServerVariables("SERVER_NAME")
+
+        Dim mytool As New Tool_fichet
+        mytool.get_info_visiteur(CurrentDomain,"commande")
+
+
+        Dim cBu As String
+        dim cCde as string
+        ccde = mytool.get_info_visiteur(CurrentDomain,"COMMANDE")
+        cBu  = mytool.get_info_visiteur(CurrentDomain,"BU")
+
+        If Not Session("charte") Is Nothing Then
+            Select cBu.ToString().ToUpper()
+                Case "FICH"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon") & "/" & ccde & "/"
+                Case "TEST"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urltest") & "/" & cCde & "/"
+                Case "ABLO"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconabloy") & "/" & ccde & "/"
+                Case "STRE"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconstremler") & "/" & ccde & "/"
+                Case "VACH"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconvachette")& "/" & ccde & "/"
+                Case "YALE"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconyale")& "/" & ccde & "/"
+                Case "SHER"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconsherlock")& "/" & ccde & "/"
+                Case "REHAB"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")& "/" & ccde & "/"
+                Case "FSBA"
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urleconrehab")& "/" & ccde & "/"
+                Case Else
+
+                    sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
+            End Select
+        ELSE
+            sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
+        end if
+
+        Dim cEnviron As String
+        cEnviron  = mytool.get_info_visiteur(CurrentDomain,"Environnement")
+
+        If Session("filtre") <> "" Then
+            SqlDataSource3.SelectCommand = "SELECT [num_commande], [dtcomm],hrcomm,[societe], [num_client], [ref_client], [delai],  [prix_valideur],[prix_pointfort], [modele],status,souche FROM " & libcde & " where 1=1" & " AND Environnement ='" & cEnviron & "'"  & Session("filtre") & "  "& IIf (String.IsNullOrEmpty(sFiltre), String.Empty, " AND num_commande like '" & sFiltre &"'") &" order by num_commande desc "
+        Else
+            SqlDataSource3.SelectCommand = "SELECT [num_commande], [dtcomm],hrcomm,[societe], [num_client], [ref_client], [delai],  [prix_valideur],[prix_pointfort], [modele],status,souche FROM " & libcde & " where Environnement ='" & cEnviron & "' " & IIf (String.IsNullOrEmpty(sFiltre), String.Empty, " AND num_commande like '" & sFiltre &"'") &"  order by num_commande desc "
+        End If
+
+        If Session("client") <> "ADMIN" Then
+            Response.Redirect("../loginnew.aspx")
+
+        End If
+
+    End sub
+    'fin aeh
+
+    Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
+        'aeh
+
+        Dim MaTrad As New Tool_fichet
+        Button1.text = MaTrad.traduction(IIf (Session("langue") Is Nothing, String.Empty, Session("langue")), "LISTCOMMANDEHISTO", "BUTTON1")
+        'if not IsPostBack then
+        RechercherParNumCmd(String.Empty)
+
+        'end if
+        'fin aeh
+    End Sub
+
     Protected Sub GridView3_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles Gridview3.RowDataBound
+
+
         If e.Row.RowType = DataControlRowType.Header Then
-            
+
             e.Row.Cells(10).Text = "Statut"
         End If
 
@@ -105,49 +110,49 @@
             Dim Lblcde As Label
             Lblcde = e.Row.FindControl("cde")
             tabName = getlongName(Lblcde.Text.Trim.PadLeft(7, "0"))
-			
-	 Dim souche As String = DataBinder.Eval(e.Row.DataItem, "souche").ToString()
 
-        ' Extraire la souche (3 premiers caractères)
-			
-            e.Row.Cells(9).Text = "<a href='" & sPATH  & tabName(0) & "/" & tabName(1) & "/"& souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_AT.HTML" & "' target='_BLANK'><img src='images/cle.png'  border='0'></a>"
-         
-            
-          
-        
+            Dim souche As String = DataBinder.Eval(e.Row.DataItem, "souche").ToString()
+
+            ' Extraire la souche (3 premiers caractères)
+
+            e.Row.Cells(9).Text = "<a href='" & sPATH & tabName(0) & "/" & tabName(1) & "/" & souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_AT.HTML" & "' target='_BLANK'><img src='images/cle.png'  border='0'></a>"
+
+
+
+
             Dim lblClient As Label
             lblClient = e.Row.FindControl("NumClient")
             Dim recupvalideur As String
             recupvalideur = ""
-            
+
             recupvalideur = ToolRecup.get_valideur_info(lblClient.Text, "codeclient")
             tabName = getlongName(Lblcde.Text.Trim.PadLeft(7, "0"))
-            
+
             If recupvalideur <> "" Then
                 e.Row.Cells(2).Text = recupvalideur
                 e.Row.Cells(6).Text = ToolRecup.get_order_info(Lblcde.Text.Trim, "ref_valideur")
-            
-                    e.Row.Cells(7).Text = "<a href='" & sPATH  & tabName(0) & "/" & tabName(1) & "/" & souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_TA.HTML" & "' target='_BLANK'>" & e.Row.Cells(7).Text & "</a>"
-               
-               
+
+                e.Row.Cells(7).Text = "<a href='" & sPATH & tabName(0) & "/" & tabName(1) & "/" & souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_TA.HTML" & "' target='_BLANK'>" & e.Row.Cells(7).Text & "</a>"
+
+
             Else
-               
-                    e.Row.Cells(7).Text = "<a href='" & sPATH  & tabName(0) & "/" & tabName(1) & "/"& souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_TA.HTML" & "' target='_BLANK'>" & e.Row.Cells(7).Text & "</a>"
-               
-                
+
+                e.Row.Cells(7).Text = "<a href='" & sPATH & tabName(0) & "/" & tabName(1) & "/" & souche & Lblcde.Text.Trim.PadLeft(7, "0") & "_TA.HTML" & "' target='_BLANK'>" & e.Row.Cells(7).Text & "</a>"
+
+
             End If
-            
+
             recupvalideur = ToolRecup.get_valideur_info(lblClient.Text, "raisonsociale")
             If recupvalideur <> "" Then
                 e.Row.Cells(3).Text = recupvalideur
             End If
-            
-            
-           
+
+
+
             Dim MaTrad As New Tool_fichet
             Dim Lblstatut As Label
             Lblstatut = e.Row.FindControl("statut")
-         
+
             Select Case Lblstatut.Text.Trim
                 Case "-1"
                     e.Row.Cells(10).Text = "<img src='../images/statut_annulee.png'  border='0' title='" & MaTrad.traduction("fr-FR", "ARCHIVE_ECON", "STATUTM1") & "'>"
@@ -170,7 +175,7 @@
                 Case Else
                     e.Row.Cells(10).Text = ""
             End Select
-         
+
             If affiche_commande(Lblcde.Text) = False Then
                 e.Row.Cells(10).Text = ""
             End If
@@ -180,33 +185,32 @@
         End If
     End Sub
     Private Function affiche_commande(ByVal wCde As String) As Boolean
-     
 
         Dim connectionString As String = System.Configuration.ConfigurationManager.AppSettings("connectionString")
 
         Dim dbConnection As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString)
 
-		
-		   Dim cEnviron As String
-			dim CurrentDomain as string
-		Dim ToolRecup As New Tool_fichet
-		CurrentDomain = request.ServerVariables("SERVER_NAME")
-		cEnviron  = ToolRecup.get_info_visiteur(CurrentDomain,"Environnement")
-		
-		   
-		IF Session("charte").ToString().ToUpper() = "REHAB" then
-			libcde="commandes_portes_rehab"
-		Else
-			libcde="commandes_portes"
-		End If	
-	
-		Dim cSql As String
 
-		
-		
+        Dim cEnviron As String
+        dim CurrentDomain as string
+        Dim ToolRecup As New Tool_fichet
+        CurrentDomain = request.ServerVariables("SERVER_NAME")
+        cEnviron  = ToolRecup.get_info_visiteur(CurrentDomain,"Environnement")
+
+
+        IF Session("charte").ToString().ToUpper() = "REHAB" then
+            libcde="commandes_portes_rehab"
+        Else
+            libcde="commandes_portes"
+        End If
+
+        Dim cSql As String
+
+
+
         cSql = " SELECT * FROM " & libcde & _
                                 " WHERE     (num_commande=" & wCde & ")" & _
-								" AND Environnement ='" & cEnviron & "'"
+                                " AND Environnement ='" & cEnviron & "'"
 
 
 
@@ -222,7 +226,6 @@
 
 
         Dim i As Integer
-
         For i = 0 To dsCommande.Tables(0).Rows.Count - 1
             ' Console.WriteLine(dsCommande.Tables(0).Rows(i).Item(3).ToString)
 
@@ -231,8 +234,8 @@
 
             Dim dbConnection2 As System.Data.IDbConnection = New System.Data.SqlClient.SqlConnection(connectionString2)
 
-            cSql = "SELECT content FROM econelements WHERE econelements.name='" & _
-                                 dsCommande.Tables(0).Rows(i).Item("configuration").ToString & _
+            cSql = "SELECT content FROM econelements WHERE econelements.name='" &
+                                 dsCommande.Tables(0).Rows(i).Item("configuration").ToString &
                                   "' AND modelversion>='9'"
 
 
@@ -258,8 +261,11 @@
 
 
         Next
+
+
+
     End Function
-    
+
     Private Function getlongName(ByVal p As String) As String()
         Dim tabName As String() = New String(1) {}
         tabName(0) = p.Substring(0, 3)
@@ -268,8 +274,8 @@
 
         Return tabName
     End Function
-            
-   
+
+
 </script>
 
 <asp:Content ContentPlaceHolderID="e_body" runat="server">

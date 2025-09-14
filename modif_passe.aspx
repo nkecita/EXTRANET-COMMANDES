@@ -1,4 +1,4 @@
-<%@  MasterPageFile="~/MainMasterPage.master" %>
+<%@  MasterPageFile="~/MainMasterPagetoken.master" %>
 
 <script runat="server">
  
