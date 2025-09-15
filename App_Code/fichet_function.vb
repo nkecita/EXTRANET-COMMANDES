@@ -365,9 +365,9 @@ End Try
 
         DsMarcheEnsemble.ConnectionString = System.Configuration.ConfigurationManager.AppSettings("connectionString")
 
-        DsMarcheEnsemble.SelectCommand = " SELECT num_commande" & _
-                                         " FROM commandes_portes " & _
-                                         " where (cp_march_id='EXTERN' or cc_march_id='PORTE') " & _
+        DsMarcheEnsemble.SelectCommand = " SELECT num_commande,souche" &
+                                         " FROM commandes_portes " &
+                                         " where (cp_march_id='EXTERN' or cc_march_id='PORTE') " &
                                          " AND     (commandes_portes.cp_cc_nocde= '" & wCommande & "')"
 
 
@@ -384,9 +384,9 @@ End Try
             For i = 0 To dtMarcheEnsemble.Rows.Count - 1
                 tabName = getlongName(dtMarcheEnsemble.Rows(i).Item("num_commande").ToString.Trim.PadLeft(7, "0"))
                 If i = dtMarcheEnsemble.Rows.Count() - 1 Then
-                    cListeCommande = cListeCommande & "<a href='" & sPATH  & tabName(0) & "/" & tabName(1) & "/CEW" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString.Trim.PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString & "</A>"
+                    cListeCommande = cListeCommande & "<a href='" & sPath & tabName(0) & "/" & tabName(1) & "/" & dtMarcheEnsemble.Rows(i).Item("souche").ToString & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString.Trim.PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString & "</A>"
                 Else
-                    cListeCommande = cListeCommande & "<a href='" & sPATH  & tabName(0) & "/" & tabName(1) & "/CEW" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString.Trim.PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString & "</A>" & " - "
+                    cListeCommande = cListeCommande & "<a href='" & sPath & tabName(0) & "/" & tabName(1) & "/" & dtMarcheEnsemble.Rows(i).Item("souche").ToString & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString.Trim.PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & dtMarcheEnsemble.Rows(i).Item("num_commande").ToString & "</A>" & " - "
                 End If
 
 

@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\App_Code"
+    "\\admin",
+    "\\App_Code",
+    "\\img",
+    "\\include"
   ],
+  "SelectedNode": "\\img\\logo_fichet.png",
   "PreviewInSolutionExplorer": false
 }

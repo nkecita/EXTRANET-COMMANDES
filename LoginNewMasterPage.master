@@ -15,7 +15,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <title>Econ _ Gestion des commandes par le configurateur de produits</title>
+    <title>Econ - Gestion des commandes par le configurateur de produits</title>
     <%
 
         Dim mytool As New Tool_fichet
@@ -28,7 +28,7 @@
         Select Case True
             Case CurrentDomain.Contains(".abloy")
                 imgLogo.ImageUrl = "img/logo_abloy.png"
-            Case CurrentDomain.Contains("fichet")
+            Case CurrentDomain.Contains("fichet-pointfort")
                 imgLogo.ImageUrl = "img/logo_fichet.png"
             Case CurrentDomain.Contains("stremler")
                 imgLogo.ImageUrl = "img/logo_stremler.png"
@@ -36,8 +36,11 @@
                 imgLogo.ImageUrl = "img/logo_vachette.png"
             Case CurrentDomain.Contains("yale")
                 imgLogo.ImageUrl = "img/logo_yale.png"
-            Case CurrentDomain.Contains("rehab")
+            Case CurrentDomain.Contains("fichet-serrurerie-batiment")
                 imgLogo.ImageUrl = "img/logo_rehab.png"
+            Case CurrentDomain.Contains("sherlock")
+                imgLogo.ImageUrl = "img/logo_sherlock.png"
+
             Case Else
                 imgLogo.ImageUrl = "img/logo_test.png"
         End Select

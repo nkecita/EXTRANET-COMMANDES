@@ -102,15 +102,15 @@
         Else
             If Session("chaine_econ") IsNot Nothing Then
                 finalUrl = Session("chaine_econ").ToString()
-                finalUrl = finalUrl.Replace("http", "https")
+                '  finalUrl = finalUrl.Replace("http", "https")
             End If
         End If
 
         iframeEcon.Text = "<iframe name='I1' src='" & finalUrl & "' frameborder='0' " &
-                   "scrolling='auto' style='height:96%;width:100%;display:none;' " &
-                   "onload='hideLoader(this)'>" &
-                   "Votre navigateur ne prend pas en charge les cadres intégrés." &
-                   "</iframe>"
+                       "scrolling='auto' style='height:96%;width:100%;display:none;' " &
+                       "onload='hideLoader(this)'>" &
+                      "Votre navigateur ne prend pas en charge les cadres intégrés." &
+                    "</iframe>"
 
 
 
@@ -120,15 +120,15 @@
         Dim charte As String = If(TryCast(Session("charte"), String), "").ToUpper()
 
         Select Case charte
-            Case "FICH" : Return ConfigurationManager.AppSettings("urlecon") & "/econ4/"
+            Case "FICH" : Return ConfigurationManager.AppSettings("urlecon") & "/econ-fichet/"
             Case "TEST" : Return ConfigurationManager.AppSettings("urltest") & "/econ-test/"
             Case "ABLO" : Return ConfigurationManager.AppSettings("urleconabloy") & "/econ-abloy/"
             Case "STRE" : Return ConfigurationManager.AppSettings("urleconstremler") & "/econ4-stremler/"
             Case "VACH" : Return ConfigurationManager.AppSettings("urleconvachette") & "/econ4-vachette/"
-            Case "YALE" : Return ConfigurationManager.AppSettings("urleconyale") & "/econ4-yale/"
-            Case "SHER" : Return ConfigurationManager.AppSettings("urleconsherlock") & "/econ4-sherlock/"
-            Case "REHAB", "FSBA" : Return ConfigurationManager.AppSettings("urleconrehab") & "/econ4-rehab/"
-            Case Else : Return ConfigurationManager.AppSettings("urlecon") & "/econ4/"
+            Case "YALE" : Return ConfigurationManager.AppSettings("urleconyale") & "/econ-yale/"
+            Case "SHER" : Return ConfigurationManager.AppSettings("urleconsherlock") & "/econ-sherlock/"
+            Case "REHAB", "FSBA" : Return ConfigurationManager.AppSettings("urleconrehab") & "/econ-rehab/"
+            Case Else : Return ConfigurationManager.AppSettings("urlecon") & "/econ/"
         End Select
     End Function
 
@@ -164,7 +164,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <title>Econ _ Gestion des commandes par le configurateur de produits</title>
+    <title>Econ - Gestion des commandes par le configurateur de produits</title>
     <link runat="server" id="style_chooser" rel="stylesheet" type="text/css" />
     <style>
         .spinner {
