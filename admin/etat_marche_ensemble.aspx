@@ -4,13 +4,13 @@
 <%@ Import Namespace="System.Data.SqlClient" %>
 
 <script runat="server">
-    
+
     Public sPATH As String = ""
     Public tabName As String() = New String(1) {}
-    
+
     Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs)
         Session.Abandon()
-        Response.Redirect("../login.aspx")
+        Response.Redirect("../loginnew.aspx")
     End Sub
     Sub Page_Load(ByVal Sender As Object, ByVal E As EventArgs)
         Dim MaTrad As New Tool_fichet
@@ -18,11 +18,11 @@
         SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.AppSettings("connectionString")
         sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
     End Sub
-    
+
     Private Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles GridView1.RowDataBound
         Dim MaTrad As New Tool_fichet
         If e.Row.RowType = DataControlRowType.Header Then
-     
+
             e.Row.Cells(0).Text = "Commandes"
             e.Row.Cells(1).Text = "Cylindre"
             e.Row.Cells(2).Text = "Principal"
@@ -38,12 +38,12 @@
             Lblcde = e.Row.FindControl("cde")
             Dim ToolRecup As New Tool_fichet
             tabName = getlongName(Lblcde.Text.ToString().PadLeft(7, "0"))
-            'e.Row.Cells(0).Text = "<a href='" & "http://econ.fichet-pointfort.fr/commandes/CEW" & Lblcde.Text.ToString().PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & Lblcde.Text & "</A>" & IIf(ToolRecup.get_commande_marche_ensemble(Lblcde.Text).ToString.Trim <> "", " - " & ToolRecup.get_commande_marche_ensemble(Lblcde.Text), "")
+            'e.Row.Cells(0).Text = "<a href='" & "http://econ2.fichet-pointfort.fr/commandes_fichet/CEW" & Lblcde.Text.ToString().PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & Lblcde.Text & "</A>" & IIf(ToolRecup.get_commande_marche_ensemble(Lblcde.Text).ToString.Trim <> "", " - " & ToolRecup.get_commande_marche_ensemble(Lblcde.Text), "")
             e.Row.Cells(0).Text = "<a href='" & sPATH & "/commandes/" & tabName(0) & "/" & tabName(1) & "/CEW" & Lblcde.Text.Trim.PadLeft(7, "0") & "_TC.HTML" & "' target='_BLANK'>" & Lblcde.Text & "</A>" & IIf(ToolRecup.get_commande_marche_ensemble(Lblcde.Text).ToString.Trim <> "", " - " & ToolRecup.get_commande_marche_ensemble(Lblcde.Text), "")
-           
-            
-           
-           
+
+
+
+
         End If
     End Sub
 
@@ -55,7 +55,7 @@
 
         Return tabName
     End Function
-   
+
 </script>
 
 <asp:Content ContentPlaceHolderID="e_body" runat="server">

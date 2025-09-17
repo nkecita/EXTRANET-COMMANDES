@@ -68,6 +68,9 @@
                 Case "FSBA"
                     style_chooser.Attributes("href") = "style/e_style_rehab.css"
                     lbl_e_menu_g.Text = "Connect&eacute; en tant que client Fichet Serrurerie B&acirc;timent"
+                Case "TEST"
+                    style_chooser.Attributes("href") = "style/e_style_TEST.css"
+                    lbl_e_menu_g.Text = "Connecté en tant que Testeur"
                 Case Else
 
                     style_chooser.Attributes("href") = "style/e_style_aa.css"
@@ -118,6 +121,7 @@
     End Sub
     Private Function ResolveBasePath() As String
         Dim charte As String = If(TryCast(Session("charte"), String), "").ToUpper()
+
 
         Select Case charte
             Case "FICH" : Return ConfigurationManager.AppSettings("urlecon") & "/econ-fichet/"

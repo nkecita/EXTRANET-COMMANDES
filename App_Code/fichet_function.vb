@@ -224,7 +224,7 @@ End Try
             Select Case charte.ToString().ToUpper()
                 Case "FICH"
                     spath = System.Configuration.ConfigurationManager.AppSettings("urlecon")
-                    pEnv = "FICH"
+                    pEnv = "FICHET"
                 Case "TEST"
                     spath = System.Configuration.ConfigurationManager.AppSettings("urltest")
                     pEnv = "ABLOY"
@@ -354,8 +354,8 @@ End Try
 		ELSE
 		
 						sPATH = System.Configuration.ConfigurationManager.AppSettings("urlecon")
-		end if
-      
+		end If
+
 
         Dim dvMarcheEnsemble As New DataView
         Dim dtMarcheEnsemble As New DataTable
@@ -363,12 +363,17 @@ End Try
         DsMarcheEnsemble.ID = "tmp_MarcheEnsemble"
         DsMarcheEnsemble.DataSourceMode = SqlDataSourceMode.DataSet
 
+        ' Assigner la chaîne de connexion
         DsMarcheEnsemble.ConnectionString = System.Configuration.ConfigurationManager.AppSettings("connectionString")
 
-        DsMarcheEnsemble.SelectCommand = " SELECT num_commande,souche" &
-                                         " FROM commandes_portes " &
-                                         " where (cp_march_id='EXTERN' or cc_march_id='PORTE') " &
-                                         " AND     (commandes_portes.cp_cc_nocde= '" & wCommande & "')"
+        ' Définir la commande SQL avec continuation de lignes correcte
+        DsMarcheEnsemble.SelectCommand = "SELECT num_commande, souche FROM commandes_portes WHERE (cp_march_id='EXTERN' OR cc_march_id='PORTE') AND (commandes_portes.cp_cc_nocde = @Commande)"
+
+        ' Supprimer d'éventuels anciens paramètres
+        DsMarcheEnsemble.SelectParameters.Clear()
+
+        ' Ajouter le paramètre sécurisé
+        DsMarcheEnsemble.SelectParameters.Add("Commande", wCommande)
 
 
 

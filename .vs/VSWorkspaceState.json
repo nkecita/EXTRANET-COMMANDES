@@ -1,11 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\admin",
-    "\\App_Code",
-    "\\img",
-    "\\include"
+    "\\style"
   ],
-  "SelectedNode": "\\img\\logo_fichet.png",
+  "SelectedNode": "\\LoginNewMasterPage.master",
   "PreviewInSolutionExplorer": false
 }

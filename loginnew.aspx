@@ -145,7 +145,17 @@
 
             Session.Timeout = 40
 
-            Session("charte") = dataSet.Tables(0).Rows(0).Item("bu")
+            Dim serverName As String = Request.ServerVariables("SERVER_NAME")
+
+
+            ' Test insensible à la casse
+            If serverName.ToLower().Contains("test".ToLower()) Then
+                Session("charte") = "TEST"
+            Else
+                Session("charte") = dataSet.Tables(0).Rows(0).Item("bu")
+            End If
+
+
             Session("pays") = dataSet.Tables(0).Rows(0).Item("codepays") ' Récupération du pays
             Session("langue") = dataSet.Tables(0).Rows(0).Item("langue").ToString() ' Langue du client
             Session("client") = dataSet.Tables(0).Rows(0).Item("codeclient") ' code du client
